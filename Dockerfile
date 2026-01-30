@@ -1,7 +1,9 @@
 FROM python:3.10-slim
 
-# Install system dependencies required by OpenCV & InsightFace
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -12,12 +14,16 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy dependencies first (better caching)
+# Upgrade pip (important for pyproject builds)
+RUN pip install --upgrade pip
+
+# Copy requirements first
 COPY requirements.txt .
 
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# Copy application code
 COPY . .
 
 EXPOSE 8080
