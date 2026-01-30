@@ -1,5 +1,5 @@
 import os
-import cv2
+from PIL import Image
 import numpy as np
 from flask import Flask, request, render_template, redirect, url_for
 from insightface.app import FaceAnalysis
@@ -12,6 +12,16 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
+
+
+def load_image_bgr(path):
+    img = Image.open(path).convert("RGB")
+    arr = np.array(img)
+    return arr[:, :, ::-1]  # RGB → BGR
+
+def save_image_bgr(arr, path):
+    rgb = arr[:, :, ::-1]  # BGR → RGB
+    Image.fromarray(rgb).save(path)
 
 # Face detection
 face_app = FaceAnalysis(name="buffalo_l")
@@ -32,8 +42,9 @@ def index():
         src_file.save(src_path)
         tgt_file.save(tgt_path)
 
-        src_img = cv2.imread(src_path)
-        tgt_img = cv2.imread(tgt_path)
+        src_img = load_image_bgr(src_path)
+        tgt_img = load_image_bgr(tgt_path)
+
 
         src_faces = face_app.get(src_img)
         tgt_faces = face_app.get(tgt_img)
@@ -49,7 +60,7 @@ def index():
         )
 
         out_path = os.path.join(RESULT_FOLDER, "result.png")
-        cv2.imwrite(out_path,result,[cv2.IMWRITE_JPEG_QUALITY, 98] )
+        save_image_bgr(result, out_path)
 
 
         #return redirect(url_for("result"))

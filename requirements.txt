@@ -2,5 +2,4 @@ flask
 numpy
 Pillow
 onnxruntime
-opencv-python-headless==4.8.1.78
 insightface
