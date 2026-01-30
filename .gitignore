@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+.insightface/
+static/uploads/
+static/results/
+*.onnx
+*.wav
+*.mp3
+.env
